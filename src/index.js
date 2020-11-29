@@ -2,30 +2,38 @@ import { autorun, observable } from "mobx";
 
 const state = observable({
   count: 0,
+
   status: {
     isLoading: false,
-    message: "",
+    message: "Loaded",
   },
+
   increment() {
     this.count++;
   },
+
   decrement() {
     this.count--;
   },
+
   toLoading() {
     this.status.isLoading = true;
     this.status.message = "Loading";
   },
+
   toLoaded() {
     this.status.isLoading = false;
     this.status.message = "Loaded";
   },
-  asyncIncrement() {
+
+  async asyncIncrement() {
     this.toLoading();
-    setTimeout(() => {
-      this.increment();
-      this.toLoaded();
-    }, 1500);
+
+    await new Promise((resolve, reject) =>
+      setTimeout(() => resolve(this.increment()), 1500)
+    );
+
+    this.toLoaded();
   },
 });
 
