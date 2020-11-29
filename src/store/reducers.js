@@ -1,31 +1,41 @@
 import { combineReducers } from "redux";
-import { INCREMENT, DECREMENT, IS_LOADING, IS_LOADED, IS_LOADED_STATUS } from "./constants";
+import {
+  INCREMENT,
+  DECREMENT,
+  IS_LOADING,
+  IS_LOADED,
+  IS_LOADED_STATUS,
+} from "./constants";
 
 const count = (state = 0, action) => {
+  const { payload = 1 } = action;
   switch (action.type) {
     case INCREMENT:
-      console.log(action.payload);
-      return action.payload + 1;
+      return state + payload;
     case DECREMENT:
-      return action.payload - 1;
+      return state - payload;
     default:
       return state;
   }
 };
 
-const status = (state = { message: IS_LOADED_STATUS, isLoading: false }, action) => {
-  switch (action.type) {
+const status = (
+  state = { message: IS_LOADED_STATUS, isLoading: false },
+  action
+) => {
+  const { type, payload } = action;
+  switch (type) {
     case IS_LOADING:
       return {
         ...state,
         isLoading: true,
-        message: action.payload.status,
+        message: payload.status,
       };
     case IS_LOADED:
       return {
         ...state,
         isLoading: false,
-        message: action.payload.status,
+        message: payload.status,
       };
     default:
       return state;

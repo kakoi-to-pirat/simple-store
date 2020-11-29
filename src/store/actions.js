@@ -1,6 +1,7 @@
 import {
   INCREMENT,
   DECREMENT,
+  ASYNC_INCREMENT,
   IS_LOADING,
   IS_LOADED,
   IS_LOADING_STATUS,
@@ -17,12 +18,10 @@ export const decrement = (count) => ({
   payload: count,
 });
 
-export const asyncIncrement = (count) => (dispatch) => {
-  dispatch(toLoading());
-  setTimeout(() => {
-    dispatch(increment(count));
-    dispatch(toLoaded());
-  }, 1500);
+export const asyncIncrement = () => {
+  return {
+    type: ASYNC_INCREMENT,
+  };
 };
 
 export const toLoading = (status = IS_LOADING_STATUS) => ({
