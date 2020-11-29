@@ -7,22 +7,25 @@ import {
   IS_LOADED_STATUS,
 } from "./constants";
 
-export const increment = (count) => ({
+export const increment = (count = 1) => ({
   type: INCREMENT,
   payload: count,
 });
 
-export const decrement = (count) => ({
+export const decrement = (count = 1) => ({
   type: DECREMENT,
   payload: count,
 });
 
-export const asyncIncrement = (count) => (dispatch) => {
+export const asyncIncrement = () => async (dispatch) => {
   dispatch(toLoading());
-  setTimeout(() => {
-    dispatch(increment(count));
-    dispatch(toLoaded());
-  }, 1500);
+
+  const count = await new Promise((resolve, reject) =>
+    setTimeout(() => resolve(1), 1500)
+  );
+
+  dispatch(increment(count));
+  dispatch(toLoaded());
 };
 
 export const toLoading = (status = IS_LOADING_STATUS) => ({
