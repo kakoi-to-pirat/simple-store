@@ -1,39 +1,47 @@
-import thunk from "redux-thunk";
-import logger from "redux-logger";
-import { applyMiddleware, createStore } from "redux";
-import {
-  increment,
-  asyncIncrement,
-  decrement,
-  rootReducer,
-  toLoading,
-  toLoaded,
-} from "./store";
+import { autorun, observable } from "mobx";
 
-const store = createStore(rootReducer, applyMiddleware(thunk, logger));
+const state = observable({
+  count: 0,
+  status: {
+    isLoading: false,
+    message: "",
+  },
+  increment() {
+    this.count++;
+  },
+  decrement() {
+    this.count--;
+  },
+  toLoading() {
+    this.status.isLoading = true;
+    this.status.message = "Loading";
+  },
+  toLoaded() {
+    this.status.isLoading = false;
+    this.status.message = "Loaded";
+  },
+  asyncIncrement() {
+    this.toLoading();
+    setTimeout(() => {
+      this.increment();
+      this.toLoaded();
+    }, 1500);
+  },
+});
 
 const getElement = (id) => document.getElementById(id);
 
-const getStateCount = () => store.getState().count;
-const getStateStatus = () => store.getState().status;
-
 const render = () => {
-  getElement("status").textContent = getStateStatus().message;
-  getElement("counterInput").textContent = getStateCount().toString();
+  getElement("status").textContent = state.status.message;
+  getElement("counterInput").textContent = state.count.toString();
 };
 
-getElement("incBtn").addEventListener("click", () => {
-  store.dispatch(increment(getStateCount()));
-});
+getElement("incBtn").addEventListener("click", () => state.increment());
 
-getElement("decBtn").addEventListener("click", () => {
-  store.dispatch(decrement(getStateCount()));
-});
+getElement("decBtn").addEventListener("click", () => state.decrement());
 
-getElement("asyncIncBtn").addEventListener("click", async () => {
-  store.dispatch(asyncIncrement(getStateCount()));
-});
+getElement("asyncIncBtn").addEventListener("click", () =>
+  state.asyncIncrement()
+);
 
-store.subscribe(render);
-
-render();
+autorun(render);
