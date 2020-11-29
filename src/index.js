@@ -5,7 +5,7 @@ const LOADED_MESSAGE = "Loaded";
 
 const initalState = {
   count: 0,
-  status: LOADED_MESSAGE,
+  status: { isLoading: false, message: LOADED_MESSAGE },
 };
 
 const increment = createEvent();
