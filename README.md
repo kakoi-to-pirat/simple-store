@@ -1,1 +1,1 @@
-Simple redux redux-thunk example
+Simple redux redux-saga example
