@@ -12,8 +12,8 @@
   "author": "Some Pirate",
   "license": "ISC",
   "devDependencies": {
+    "effector": "^21.7.5",
     "html-webpack-plugin": "^4.5.0",
-    "mobx": "^6.0.4",
     "webpack": "^5.8.0",
     "webpack-cli": "^3.3.4",
     "webpack-dev-server": "^3.11.0"

@@ -1,1 +1,1 @@
-Simple mobx example
+Simple effector example
