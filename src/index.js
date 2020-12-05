@@ -1,55 +1,67 @@
 import React from "react";
 import { render } from "react-dom";
-import { Provider, useDispatch, useSelector } from "react-redux";
-import { applyMiddleware, createStore } from "redux";
-import logger from "redux-logger";
-import createSagaMiddleware from "redux-saga";
-import { watchInc } from "./store/sagas";
-import { increment, asyncIncrement, decrement, rootReducer } from "./store";
+import { observable } from "mobx";
+import { useObserver } from "mobx-react-lite";
 
-const sagaMiddleware = createSagaMiddleware();
+const state = observable({
+  count: 0,
 
-const store = createStore(rootReducer, applyMiddleware(logger, sagaMiddleware));
+  status: {
+    isLoading: false,
+    message: "Loaded",
+  },
 
-sagaMiddleware.run(watchInc);
+  increment() {
+    this.count++;
+  },
+
+  decrement() {
+    this.count--;
+  },
+
+  toLoading() {
+    this.status.isLoading = true;
+    this.status.message = "Loading";
+  },
+
+  toLoaded() {
+    this.status.isLoading = false;
+    this.status.message = "Loaded";
+  },
+
+  async asyncIncrement() {
+    this.toLoading();
+
+    await new Promise((resolve, reject) =>
+      setTimeout(() => resolve(this.increment()), 1500)
+    );
+
+    this.toLoaded();
+  },
+});
 
 const App = () => {
-  const dispatch = useDispatch();
-  const count = useSelector((state) => state.count);
-  const status = useSelector((state) => state.status);
-
-  return (
+  return useObserver(() => (
     <>
       <h1>Simple store</h1>
       <div>
-        <div>Status: {status.message}</div>
-        <div>Count: {count}</div>
-        <button
-          onClick={() => dispatch(increment(1))}
-          style={{ width: "30px" }}
-        >
+        <div>Status: {state.status.message}</div>
+        <div>Count: {state.count}</div>
+        <button onClick={() => state.increment(1)} style={{ width: "30px" }}>
           +
         </button>
-        <button
-          onClick={() => dispatch(decrement(1))}
-          style={{ width: "30px" }}
-        >
+        <button onClick={() => state.decrement(1)} style={{ width: "30px" }}>
           -
         </button>
         <button
-          onClick={() => dispatch(asyncIncrement())}
+          onClick={() => state.asyncIncrement()}
           style={{ width: "120px" }}
         >
           async +
         </button>
       </div>
     </>
-  );
+  ));
 };
 
-render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
-  document.getElementById("app")
-);
+render(<App />, document.getElementById("app"));
