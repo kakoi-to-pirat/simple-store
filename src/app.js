@@ -1,12 +1,19 @@
 import React from "react";
-
 import { useStore } from "./store.js";
+import { INCREMENT, DECREMENT, IS_LOADING, IS_LOADED } from "./constants";
 
 const App = () => {
   const { store } = useStore();
   const { state, dispatch } = store;
 
-  console.log({ store });
+  const asyncIncHandle = async () => {
+    dispatch({ type: IS_LOADING });
+
+    await new Promise((resolve, reject) => setTimeout(() => resolve(1), 1500));
+
+    dispatch({ type: INCREMENT });
+    dispatch({ type: IS_LOADED });
+  };
 
   return (
     <>
@@ -20,21 +27,21 @@ const App = () => {
         </div>
         <button
           className="app__inc-btn"
-          onClick={() => dispatch(state.increment())}
+          onClick={() => dispatch({ type: INCREMENT })}
           style={{ width: "30px" }}
         >
           +
         </button>
         <button
           className="app__dec-btn"
-          onClick={() => dispatch(state.decrement())}
+          onClick={() => dispatch({ type: DECREMENT })}
           style={{ width: "30px" }}
         >
           -
         </button>
         <button
           className="app__async-inc-btn"
-          onClick={async () => dispatch(await state.asyncIncrement())}
+          onClick={() => asyncIncHandle()}
           style={{ width: "120px" }}
         >
           async +

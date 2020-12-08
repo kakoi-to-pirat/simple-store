@@ -1,45 +1,48 @@
-import React, { useState } from "react";
+import React, { useReducer } from "react";
 import { createContext, useContext } from "react";
+import {
+  INCREMENT,
+  DECREMENT,
+  IS_LOADING,
+  IS_LOADED,
+  IS_LOADED_STATUS,
+  IS_LOADING_STATUS,
+} from "./constants";
 
 const initialState = {
   count: 0,
 
   status: {
     isLoading: false,
-    message: "Loaded",
+    message: IS_LOADED_STATUS,
   },
+};
 
-  increment() {
-    this.count++;
-    return this;
-  },
-
-  decrement() {
-    this.count--;
-    return this;
-  },
-
-  toLoading() {
-    this.status.isLoading = true;
-    this.status.message = "Loading";
-    return this;
-  },
-
-  toLoaded() {
-    this.status.isLoading = false;
-    this.status.message = "Loaded";
-    return this;
-  },
-
-  async asyncIncrement() {
-    this.toLoading();
-
-    await new Promise((resolve, reject) =>
-      setTimeout(() => resolve(this.increment()), 1500)
-    );
-
-    this.toLoaded();
-  },
+const reducer = (state, action) => {
+  switch (action.type) {
+    case INCREMENT:
+      return { ...state, count: state.count + 1 };
+    case DECREMENT:
+      return { ...state, count: state.count - 1 };
+    case IS_LOADING:
+      return {
+        ...state,
+        status: {
+          isLoading: true,
+          message: IS_LOADING_STATUS,
+        },
+      };
+    case IS_LOADED:
+      return {
+        ...state,
+        status: {
+          isLoading: false,
+          message: IS_LOADED_STATUS,
+        },
+      };
+    default:
+      return state;
+  }
 };
 
 const Store = createContext();
@@ -49,13 +52,10 @@ export const useStore = () => ({
 });
 
 export const StoreProvider = ({ children }) => {
-  const [state, setState] = useState(initialState);
-  const dispatch = (action) => setState((prev) => ({ ...prev, action }));
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   return (
-    <Store.Provider value={{ state, dispatch }}>
-      {children}
-    </Store.Provider>
+    <Store.Provider value={{ state, dispatch }}>{children}</Store.Provider>
   );
 };
 
