@@ -1,6 +1,7 @@
-import { observable } from "mobx";
+import React, { useState } from "react";
+import { createContext, useContext } from "react";
 
-const store = observable({
+const initialState = {
   count: 0,
 
   status: {
@@ -10,20 +11,24 @@ const store = observable({
 
   increment() {
     this.count++;
+    return this;
   },
 
   decrement() {
     this.count--;
+    return this;
   },
 
   toLoading() {
     this.status.isLoading = true;
     this.status.message = "Loading";
+    return this;
   },
 
   toLoaded() {
     this.status.isLoading = false;
     this.status.message = "Loaded";
+    return this;
   },
 
   async asyncIncrement() {
@@ -35,6 +40,23 @@ const store = observable({
 
     this.toLoaded();
   },
+};
+
+const Store = createContext();
+
+export const useStore = () => ({
+  store: useContext(Store),
 });
 
-export default store;
+export const StoreProvider = ({ children }) => {
+  const [state, setState] = useState(initialState);
+  const dispatch = (action) => setState((prev) => ({ ...prev, action }));
+
+  return (
+    <Store.Provider value={{ state, dispatch }}>
+      {children}
+    </Store.Provider>
+  );
+};
+
+export default StoreProvider;
