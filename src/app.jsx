@@ -1,10 +1,13 @@
-import React from "react";
-import { useStore } from "./store.js";
+import React, { useState } from "react";
+import { useStore } from "./store.jsx";
 import { INCREMENT, DECREMENT, IS_LOADING, IS_LOADED } from "./constants";
+import BooksList from "~/components/BooksList";
+import Book from "~/components/Book";
 
 const App = () => {
   const { store } = useStore();
   const { state, dispatch } = store;
+  const [selectedBookId, setSelectedBookId] = useState();
 
   const asyncIncHandle = async () => {
     dispatch({ type: IS_LOADING });
@@ -46,6 +49,10 @@ const App = () => {
         >
           async +
         </button>
+      </div>
+      <div>
+        <BooksList onSelect={(book) => setSelectedBookId(book.id)} />
+        {selectedBookId && <Book id={selectedBookId} />}
       </div>
     </>
   );
